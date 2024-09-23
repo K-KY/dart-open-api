@@ -36,6 +36,9 @@ dependencies {
 	//.env
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
+// https://mvnrepository.com/artifact/org.assertj/assertj-core
+	testImplementation 'org.assertj:assertj-core:3.24.2'
+
 }
 
 tasks.named('test') {
