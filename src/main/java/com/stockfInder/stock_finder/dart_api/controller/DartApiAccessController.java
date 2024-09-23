@@ -17,7 +17,6 @@ public class DartApiAccessController {
     private String dartApiKey;
     private final String dartBaseUrl = "https://opendart.fss.or.kr/api/";
     private RestTemplate restTemplate = new RestTemplate();
-
     @Autowired
     private CorpCodeService corpCodeService;
 
@@ -29,6 +28,5 @@ public class DartApiAccessController {
         corpCodeService.downloadCorpCode(exchange);
         return dartApiKey;
     }
-
 }
 
