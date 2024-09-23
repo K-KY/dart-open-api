@@ -1,0 +1,3 @@
+  dart:
+    openapi:
+      apikey: ${DART_OPENAPI_KEY}
