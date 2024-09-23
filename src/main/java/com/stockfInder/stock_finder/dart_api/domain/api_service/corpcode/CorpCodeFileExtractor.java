@@ -10,7 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Component
-public class CorpCodeService {
+public class CorpCodeFileExtractor {
 
 
     public void downloadCorpCode(ResponseEntity<Resource> exchange) {
