@@ -1,6 +1,8 @@
 package com.stockfInder.stock_finder.dart_api.controller;
 
 import com.stockfInder.stock_finder.dart_api.domain.api_service.corpcode.CorpCodeFileExtractor;
+import com.stockfInder.stock_finder.dart_api.domain.api_service.corpcode.service.CorpCodeService;
+import com.stockfInder.stock_finder.dart_api.domain.api_service.xmlreader.ReadCorpCodeXml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -12,11 +14,13 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class DartApiAccessController {
-
+    private final String dartBaseUrl = "https://opendart.fss.or.kr/api/";
     @Value("${dart.openapi.apikey}")
     private String dartApiKey;
-    private final String dartBaseUrl = "https://opendart.fss.or.kr/api/";
     private RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private CorpCodeService corpCodeService;
     @Autowired
     private CorpCodeFileExtractor corpCodeFileExtractor;
 
@@ -26,6 +30,7 @@ public class DartApiAccessController {
         System.out.println("url = " + url);
         ResponseEntity<Resource> exchange = restTemplate.exchange(url, HttpMethod.GET, null, Resource.class);
         corpCodeFileExtractor.downloadCorpCode(exchange);
+        corpCodeService.insertCorpCode(ReadCorpCodeXml.readCorpCode());
         return dartApiKey;
     }
 }
