@@ -15,4 +15,8 @@ class CorpCodeServiceTest {
         assertThat(corpCodeService.countCorpCodeRows()).isGreaterThanOrEqualTo(0);
     }
 
+    @Test
+    void findAllCorpCode() {
+        assertThat(corpCodeService.findAllCorpCode().size()).isEqualTo(corpCodeService.countCorpCodeRows());
+    }
 }

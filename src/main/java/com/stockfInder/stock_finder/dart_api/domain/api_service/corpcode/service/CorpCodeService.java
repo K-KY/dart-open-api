@@ -17,7 +17,10 @@ public class CorpCodeService {
     }
 
     public int insertCorpCode(List<CorpCode> corpCode) {
-
         return corpCodeRepository.saveAll(corpCode).size();
+    }
+
+    public List<CorpCode> findAllCorpCode() {
+        return corpCodeRepository.findAll();
     }
 }
