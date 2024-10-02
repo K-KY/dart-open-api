@@ -19,11 +19,14 @@ public class CorpCode {
     @Id
     @Column(name = "corp_code")
     private String corpCode;
-
     @Column(name = "corp_name")
     private String corpName;
     @Column(name = "stock_code")
     private String stockCode;
     @Column(name = "modify_date")
     private LocalDate modifyDate;
+
+    public CorpCode(String corpCode) {
+        this.corpCode = corpCode;
+    }
 }

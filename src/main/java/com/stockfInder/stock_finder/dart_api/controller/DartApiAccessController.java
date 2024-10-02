@@ -1,51 +1,49 @@
 package com.stockfInder.stock_finder.dart_api.controller;
 
-import com.stockfInder.stock_finder.dart_api.domain.api_service.corpcode.CorpCodeFileExtractor;
+import com.stockfInder.stock_finder.dart_api.domain.api_service.corpcode.entity.CorpCode;
 import com.stockfInder.stock_finder.dart_api.domain.api_service.corpcode.service.CorpCodeService;
 import com.stockfInder.stock_finder.dart_api.domain.api_service.financial_statement.dto.request.FinancialStatementRequestDto;
-import com.stockfInder.stock_finder.dart_api.domain.api_service.xmlreader.ReadCorpCodeXml;
+import com.stockfInder.stock_finder.dart_api.domain.api_service.financial_statement.entity.financial_statement.FinancialStatement;
+import com.stockfInder.stock_finder.dart_api.domain.api_service.financial_statement.service.financial_statement.FinancialStatementService;
+import com.stockfInder.stock_finder.dart_api.util.DartApiAccessManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+//https://api.finance.naver.com/siseJson.naver?symbol=005930&requestType=1&startTime=20241002&endTime=20241002&timeframe=day
+//stockCode 동일
 @RestController
 public class DartApiAccessController {
-    private final String dartBaseUrl = "https://opendart.fss.or.kr/api/";
-    @Value("${dart.openapi.apikey}")
-    private String dartApiKey;
-    private RestTemplate restTemplate = new RestTemplate();
 
+    @Autowired
+    private DartApiAccessManager dartApiAccessManager;
     @Autowired
     private CorpCodeService corpCodeService;
     @Autowired
-    private CorpCodeFileExtractor corpCodeFileExtractor;
+    private FinancialStatementService statementService;
 
     @GetMapping("/download-corp-code")
-    public String updateCorpCode() {
-        String url = dartBaseUrl + "corpCode.xml?crtfc_key=" + dartApiKey;
-        System.out.println("url = " + url);
-        ResponseEntity<Resource> exchange = restTemplate.exchange(url, HttpMethod.GET, null, Resource.class);
-        corpCodeFileExtractor.downloadCorpCode(exchange);
-        corpCodeService.insertCorpCode(ReadCorpCodeXml.readCorpCode());
-        return dartApiKey;
+    public int updateCorpCode() {
+        List<CorpCode> corpCodes = dartApiAccessManager.updateCorpCode();
+
+        return corpCodeService.insertCorpCode(corpCodes);
+    }
+
+    @GetMapping("/update-finstmt")
+    public String updateStmt(@ModelAttribute FinancialStatementRequestDto financialStatementRequestDto) {
+        List<List<FinancialStatement>> financialInfo = dartApiAccessManager.getFinancialInfo(financialStatementRequestDto);
+        statementService.insertFinancialStatement(financialInfo);
+        return "OK";
     }
 
     @GetMapping("/read-finstmt")
-    public String readFinstmt(@ModelAttribute FinancialStatementRequestDto financialStatementRequestDto) {
-        System.out.println("financialStatementRequestDto = " + financialStatementRequestDto);
-        String url = dartBaseUrl + "fnlttSinglIndx.json?crtfc_key=" + dartApiKey
-                + "&corp_code=" + financialStatementRequestDto.getCorpCode()
-                + "&idx_cl_code=" + financialStatementRequestDto.getIndicatorClassificationCode()
-                + "&bsns_year=" + financialStatementRequestDto.getBusinessYear()
-                + "&reprt_code=" + financialStatementRequestDto.getReportCode();
-        System.out.println("url = " + url);
-        ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        System.out.println("exchange = " + exchange);
-        return "OK";
+    public List<FinancialStatement> reatStmt(@ModelAttribute FinancialStatementRequestDto financialStatementRequestDto) {
+        List<FinancialStatement> financialState = statementService.findFinancialState(financialStatementRequestDto);
+        if (financialState.isEmpty()) {
+            updateStmt(financialStatementRequestDto);
+            financialState = statementService.findFinancialState(financialStatementRequestDto);
+        }
+        return financialState;
     }
 }
 

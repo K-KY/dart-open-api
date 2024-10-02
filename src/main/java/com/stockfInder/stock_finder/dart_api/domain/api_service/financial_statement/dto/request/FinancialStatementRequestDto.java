@@ -9,7 +9,6 @@ import lombok.ToString;
 @ToString
 public class FinancialStatementRequestDto {
     private String corpCode;//기업 번호
-    private String indicatorClassificationCode;//지표 분류 코드
     private int businessYear;//사업 연도
     private int reportCode;//분기 코드
 }
