@@ -64,11 +64,11 @@ public class DartApiAccessManager {
     private List<List<FinancialStatementDto>> loadByReportCode(String url, List<String> reportCodes) {
         List<List<FinancialStatementDto>> responseContainer = new ArrayList<>();
         for (String reportCode : reportCodes) {
-            System.out.println("url = " + url);
+            System.out.println("url = " + url + "&reprt_code=" + reportCode);
             System.out.println("reportCode = " + reportCode);
             ResponseEntity<FinancialStatementApiResponse> exchange
                     = restTemplate
-                    .exchange(url +"&reprt_code=" + reportCode,
+                    .exchange(url + "&reprt_code=" + reportCode,
                             HttpMethod.GET, null, FinancialStatementApiResponse.class);
             responseContainer.add(Objects.requireNonNull(exchange.getBody()).getData());
         }
